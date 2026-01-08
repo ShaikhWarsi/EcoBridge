@@ -17,7 +17,7 @@
 
 ## 📖 Brief Description
 
-EcoBridge is a high-performance, open-source ecosystem bridge that breaks down the proprietary walls between your devices. Turn your Android phone into a powerful extension of your desktop—use it as a webcam, share your keyboard and clipboard, or pass through peripherals seamlessly. Built with Flutter and Electron, EcoBridge delivers low-latency performance with end-to-end encryption across Windows, Linux, and macOS. Experience true device continuity without being locked into expensive, manufacturer-specific ecosystems.
+EcoBridge is a high-performance, open-source ecosystem bridge that breaks down the proprietary walls between your devices. Turn your Android phone into a powerful extension of your Windows desktop—use it as a webcam, share your keyboard and clipboard, or pass through peripherals seamlessly. Built with Flutter and Electron, EcoBridge delivers low-latency performance with end-to-end encryption. Experience true device continuity without being locked into expensive, manufacturer-specific ecosystems.
 
 ### 🛠️ Main Tech Stack
 
@@ -38,7 +38,7 @@ Our mission is to provide a "Continuity-like" experience for **everyone**, regar
 
 ✨ **Low-latency performance**  
 🔒 **End-to-end encryption**  
-🌐 **Cross-platform support** (Windows, Linux, macOS)  
+🌐 **Windows + Android support**  
 🎨 **Beautiful, intuitive design**
 
 > 🏆 **Featured Project for AcWoC 2026**  
@@ -52,7 +52,7 @@ Our mission is to provide a "Continuity-like" experience for **everyone**, regar
 Transform your phone's high-resolution camera into a professional-quality webcam for your PC.
 
 - **Target:** 1080p/60fps with <100ms latency
-- **Tech:** WebRTC + V4L2 (Linux) / MediaFoundation (Windows)
+- **Tech:** WebRTC + MediaFoundation (Windows)
 - **Use Case:** Video calls, streaming, content creation
 
 ### 2. ⌨️ Remote Input (HID over IP)
@@ -133,7 +133,7 @@ Use laptop peripherals (microphones, controllers) as inputs for Android.
 - **For Desktop Development:**
   - Node.js (v18+)
   - npm or yarn
-  - Windows/Linux/macOS
+  - Windows
 
 ### 📱 Running the Mobile App (Flutter)
 
@@ -263,22 +263,6 @@ Implement a minimal end-to-end feature first:
 
 **Good For:** Complex features with multiple components (e.g., webcam streaming)
 
-### 🎯 Priority Areas for Contributors
-
-#### High Impact, Good Starting Points
-- **mDNS Discovery:** Desktop broadcasts, mobile scanning (Phase 1)
-- **Connection UI:** Show discovered devices, connection status
-- **Clipboard Sync:** Text-only implementation first
-- **Design System:** Create reusable component library
-- **Testing:** Unit tests, integration tests, E2E tests
-
-#### Advanced Features (Requires Experience)
-- **WebRTC Integration:** Video/audio streaming
-- **Virtual Camera Drivers:** System-level integration (Windows/Linux)
-- **Encryption Layer:** AES-256, RSA key exchange
-- **Background Services:** Keep-alive, auto-reconnect
-- **Performance Optimization:** Reduce latency, optimize bandwidth
-
 ### 🛠️ Technical Implementation Tips
 
 #### For Mobile (Flutter)
@@ -303,7 +287,7 @@ Implement a minimal end-to-end feature first:
 - Log errors comprehensively for debugging
 
 ### 🎨 Design Guidelines Summary
-
+- we can change this to greyish and add theme switchers as well
 **Do:**
 - ✅ Pure black (#000000) or very dark backgrounds
 - ✅ White elements with subtle opacity (0.05-0.1 borders, 0.6-0.9 text)
@@ -368,7 +352,6 @@ Implement a minimal end-to-end feature first:
 
 ### 🙋 Getting Help
 
-- 💬 **Discord:** [Join our server](#) (coming soon)
 - 📝 **Issues:** Open an issue labeled `question`
 - 📖 **Docs:** Check existing markdown files in the repo
 - 🤖 **AI Tools:** Use responsibly (see [AIPromptingMasterGuide.md](AIPromptingMasterGuide.md))
