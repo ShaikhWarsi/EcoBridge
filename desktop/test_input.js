@@ -9,17 +9,11 @@ socket.on("connect", () => {
     console.log("Sending mouse-move event...");
     socket.emit("remote-input", {
         type: "mouse-move",
-        params: { dx: 10, dy: 10 }
+        params: { dx: 400, dy: 50 }
     });
 
     // Simulate a click event
-    setTimeout(() => {
-        console.log("Sending mouse-click event...");
-        socket.emit("remote-input", {
-            type: "mouse-click",
-            params: { button: "left" }
-        });
-    }, 1000);
+    
 
     // Simulate keyboard event
     setTimeout(() => {
@@ -29,6 +23,14 @@ socket.on("connect", () => {
             params: { text: "Hello" }
         });
     }, 2000);
+
+    setTimeout(() => {
+        console.log("Sending mouse-click event...");
+        socket.emit("remote-input", {
+            type: "mouse-click",
+            params: { button: "left" }
+        });
+    }, 1000);
 
     // Close after some time
     setTimeout(() => {
