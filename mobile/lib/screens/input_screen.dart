@@ -105,8 +105,8 @@ class _InputScreenState extends State<InputScreen> {
     return GestureDetector(
       onPanUpdate: (details) {
         sendRemoteInput('mouse-move', {
-          'dx': details.delta.dx * 1.5,
-          'dy': details.delta.dy * 1.5,
+          'dx': details.delta.dx * 2.5,
+          'dy': details.delta.dy * 2.5,
         });
       },
       onTap: () {

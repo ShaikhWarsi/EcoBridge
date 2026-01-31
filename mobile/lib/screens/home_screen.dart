@@ -27,6 +27,12 @@ class HomeScreen extends StatelessWidget {
       _isConnected = true;
     });
 
+    _socket!.on('clipboard-sync', (data) {
+      if (data != null && data['text'] != null) {
+        Clipboard.setData(ClipboardData(text: data['text']));
+      }
+    });
+
     _socket!.onDisconnect((_) {
       _isConnected = false;
     });
@@ -67,6 +73,31 @@ class HomeScreen extends StatelessWidget {
         MaterialPageRoute(
           builder: (_) => InputScreen(socket: _socket!, isConnected: _isConnected)
         )
+      );
+    }
+  }
+
+  Future<void> _syncClipboard(BuildContext context) async {
+    _initGlobalSocket();
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data != null && data.text != null && _isConnected) {
+      _socket!.emit('clipboard-sync', {'text': data.text});
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Clipboard synced to PC"),
+            duration: Duration(seconds: 2),
+            backgroundColor: Color(0xFF111111),
+          ),
+        );
+      }
+    } else if (!_isConnected && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Not connected to PC"),
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.redAccent,
+        ),
       );
     }
   }
@@ -165,9 +196,9 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Expanded(child: _buildMinimalAction(context, Icons.videocam_outlined, "Webcam", () {})),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildMinimalAction(context, Icons.keyboard_outlined, "Input", () {})),
+                    Expanded(child: _buildMinimalAction(context, Icons.keyboard_outlined, "Input", () => _checkAccessibility(context))),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildMinimalAction(context, Icons.copy_rounded, "Clipboard", () {})),
+                    Expanded(child: _buildMinimalAction(context, Icons.copy_rounded, "Clipboard", () => _syncClipboard(context))),
                   ],
                 ),
                 const SizedBox(height: 12),
