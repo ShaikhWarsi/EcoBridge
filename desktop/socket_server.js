@@ -231,6 +231,11 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('video-frame', (data) => {
+        // Broadcast the frame to all connected clients (including the desktop frontend)
+        socket.broadcast.emit('video-frame', data);
+    });
+
     socket.on('disconnect', () => {
         console.log('Disconnected:', socket.id);
     });

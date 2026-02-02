@@ -1,13 +1,50 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { io, Socket } from 'socket.io-client';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('Webcam');
   const [mounted, setMounted] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [flipHorizontal, setFlipHorizontal] = useState(false);
+  const [flipVertical, setFlipVertical] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
+    
+    // Initialize socket connection
+    const socket = io('http://localhost:3001');
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      console.log('Connected to socket server');
+    });
+
+    socket.on('video-frame', (data: ArrayBuffer) => {
+      if (!canvasRef.current) return;
+      
+      const blob = new Blob([data], { type: 'image/jpeg' });
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        const ctx = canvasRef.current?.getContext('2d');
+        if (ctx && canvasRef.current) {
+          canvasRef.current.width = img.width;
+          canvasRef.current.height = img.height;
+          ctx.drawImage(img, 0, 0);
+        }
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+      setIsStreaming(true);
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const handleMinimize = () => {
@@ -127,14 +164,65 @@ export default function Home() {
           )}
 
           {activeTab === 'Webcam' && (
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center space-y-4">
-              <h3 className="text-xl font-medium">Virtual Webcam</h3>
-              <p className="text-white/40 text-sm">
-                Select your phone from the list to start streaming.
-              </p>
-              <button className="px-8 py-3 bg-white text-black rounded-xl font-medium hover:bg-white/90 transition-colors">
-                Start Preview
-              </button>
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-xl font-medium">Virtual Webcam</h3>
+                <p className="text-white/40 text-sm">
+                  {isStreaming 
+                    ? "Streaming active from mobile device." 
+                    : "Start the webcam on your EcoBridge mobile app to see the preview."}
+                </p>
+              </div>
+              
+              <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/5 shadow-2xl">
+                {!isStreaming && (
+                  <div className="absolute inset-0 flex items-center justify-center text-white/20 text-sm font-light z-10 bg-black/50 backdrop-blur-sm">
+                    Waiting for mobile stream...
+                  </div>
+                )}
+                {/* [AcWoC] [Difficulty: Hard] Low latency video pipeline implementation in progress. Virtual camera driver pending. */}
+                <canvas 
+                  ref={canvasRef} 
+                  className="w-full h-full object-contain transition-transform duration-300"
+                  style={{
+                    transform: `scale(${flipHorizontal ? -1 : 1}, ${flipVertical ? -1 : 1})`
+                  }}
+                />
+
+                {/* Overlay Controls */}
+                <div className="absolute bottom-4 right-4 flex gap-2 z-20">
+                  <button 
+                    onClick={() => setFlipHorizontal(!flipHorizontal)}
+                    className={`p-2 rounded-lg backdrop-blur-md border transition-all ${flipHorizontal ? 'bg-white/20 border-white/40 text-white' : 'bg-black/40 border-white/10 text-white/60 hover:bg-black/60'}`}
+                    title="Flip Horizontal"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h8m0 0l-4-4m4 4l-4 4m0 6H8m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => setFlipVertical(!flipVertical)}
+                    className={`p-2 rounded-lg backdrop-blur-md border transition-all ${flipVertical ? 'bg-white/20 border-white/40 text-white' : 'bg-black/40 border-white/10 text-white/60 hover:bg-black/60'}`}
+                    title="Flip Vertical"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8v8m0 0l-4-4m4 4l4-4m6 0V8m0 0l4 4m-4-4l-4 4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-center items-center gap-4 pt-2">
+                <div className="flex gap-2">
+                  <div className={`px-3 py-1 ${isStreaming ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-white/5 text-white/20 border-white/10'} border rounded-full text-[10px] font-bold tracking-widest uppercase transition-colors flex items-center gap-2`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isStreaming ? 'bg-green-500 animate-pulse' : 'bg-white/20'}`} />
+                    {isStreaming ? 'Live' : 'Offline'}
+                  </div>
+                  <div className="px-3 py-1 bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded-full text-[10px] font-bold tracking-widest uppercase flex items-center">
+                    1080p
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
