@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'dashboard_screen.dart';
 import 'input_screen.dart';
+import 'webcam_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -194,7 +195,18 @@ class HomeScreen extends StatelessWidget {
                 // Bottom Actions - Minimal Grid
                 Row(
                   children: [
-                    Expanded(child: _buildMinimalAction(context, Icons.videocam_outlined, "Webcam", () {})),
+                    // [AcWoC] [Difficulty: Hard] Low latency video pipeline implementation in progress
+                    Expanded(child: _buildMinimalAction(context, Icons.videocam_outlined, "Webcam", () {
+                      _initGlobalSocket();
+                      if (_socket != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => WebcamScreen(socket: _socket!),
+                          ),
+                        );
+                      }
+                    })),
                     const SizedBox(width: 12),
                     Expanded(child: _buildMinimalAction(context, Icons.keyboard_outlined, "Input", () => _checkAccessibility(context))),
                     const SizedBox(width: 12),
